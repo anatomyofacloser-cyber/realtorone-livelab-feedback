@@ -27,6 +27,8 @@ input.in{width:100%;background:#242426;border:0;outline:1px solid #333;border-ra
 .card img{width:92px;border-radius:6px;flex:none;box-shadow:0 6px 18px rgba(0,0,0,.6)}
 .note{font-size:12px;color:#9aa0a6;text-align:center;margin:8px 22px;line-height:1.5}
 .hide{display:none!important}
+.lb{display:block;font-size:12.5px;font-weight:600;color:#ddd;margin:10px 0 6px}.lb:first-of-type{margin-top:0}.lb em{color:#9aa0a6;font-weight:500;font-style:normal}
+.ph{display:flex;gap:6px}.ph .cc{width:74px;flex:none;text-align:center}.priv{font-size:11.5px;color:#9aa0a6;margin-top:10px}
 </style></head><body><div class="wrap">
 <div class="brand"><span>REALTORONE</span><span id="labNo">LIVE LAB</span></div>
 <form id="f" novalidate>
@@ -37,14 +39,18 @@ input.in{width:100%;background:#242426;border:0;outline:1px solid #333;border-ra
 <div class="q"><div class="ql"><span>3</span>Which part was most useful to you?</div><input class="in" id="q3" maxlength="200" placeholder="One line…"></div>
 </section>
 <section class="pg" id="p2">
-<div class="top"><div class="ey" id="eyebrow2"></div><div class="h">Almost done 🙌</div><div class="sub"><a href="#" id="prev" style="color:#F5C242;text-decoration:none">← Page 1</a> · Page 2 of 2 · where should we send your ebook?</div><div class="bar"><i style="width:90%"></i></div></div>
+<div class="top"><div class="ey" id="eyebrow2"></div><div class="h">Almost done 🙌</div><div class="sub"><a href="#" id="prev" style="color:#F5C242;text-decoration:none">← Page 1</a> · Page 2 of 2 · almost there</div><div class="bar"><i style="width:90%"></i></div></div>
 <div class="q"><div class="ql"><span>4</span>How confident are you to use this in your work this week?</div><div class="sc" id="q4"></div><div class="sl"><span>Not yet</span><span>Fully ready</span></div></div>
 <div class="q"><div class="ql"><span>5</span>What's still stopping you from closing more deals?</div><input class="in" id="q5" maxlength="200" placeholder="One line…"></div>
 <div class="q"><div class="ql"><span>6</span>Want our experts to help you apply this?</div><div class="ch" id="q6"></div></div>
 <div class="q"><div class="ql">Your details</div>
-<input class="in" id="name" maxlength="80" placeholder="Name (optional)" autocomplete="name" style="margin-bottom:8px">
-<input class="in" id="email" type="email" maxlength="120" placeholder="Email (we send the ebook here) *" autocomplete="email" style="margin-bottom:8px"><div class="err" id="emErr">Please enter a valid email</div>
-<input class="in" id="wa" type="tel" maxlength="20" placeholder="WhatsApp number (optional), e.g. +971 50…" autocomplete="tel"></div>
+<label class="lb" for="name">Name <em>(optional)</em></label>
+<input class="in" id="name" maxlength="80" placeholder="Your name" autocomplete="name">
+<label class="lb" for="email">Where should we send your ebook? <b style="color:#F5C242">*</b></label>
+<input class="in" id="email" type="email" inputmode="email" maxlength="120" placeholder="you@example.com" autocomplete="email" required><div class="err" id="emErr">Please enter a valid email</div>
+<label class="lb" for="wa">WhatsApp <em>(optional, for reminders &amp; replays)</em></label>
+<div class="ph"><input class="in cc" id="cc" value="+971" maxlength="5" inputmode="tel" aria-label="Country code"><input class="in" id="wa" type="tel" inputmode="tel" maxlength="16" placeholder="50 123 4567" autocomplete="tel-national"></div>
+<div class="priv">🔒 We'll never spam or share your details.</div></div>
 <div class="cons" id="cons" role="checkbox" aria-checked="false" tabindex="0"><i>✓</i>OK to share my feedback (first name only)</div>
 <div class="err" id="sendErr" style="text-align:center;margin:0 20px">Couldn't send. Check your connection and try again.</div>
 </section>
@@ -82,6 +88,7 @@ async function init(){
   $('#cover').src=LAB.reward_cover||'';$('#rTitle').textContent=LAB.reward_title;$('#dl').href=LAB.reward_pdf;$('#dl').setAttribute('download',LAB.reward_pdf.split('/').pop());
   const done=localStorage.getItem('r1_done_'+LID);if(done){const d=JSON.parse(done);showThanks(d.name,d.email)}
 }
+function waNum(){const n=$('#wa').value.replace(/[^\d]/g,'').replace(/^0+/,'');if(!n)return '';const c='+'+$('#cc').value.replace(/[^\d]/g,'');return c+n}
 const emOk=()=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('#email').value.trim());
 function chk(){$('#b1').disabled=!(st.q1&&st.q2.length);$('#b2').disabled=sending||!(st.q4&&st.q6&&emOk());$('#emErr').style.display=($('#email').value.trim()&&!emOk())?'block':'none'}
 function page(n){['#p1','#p2','#p3'].forEach((p,i)=>$(p).classList.toggle('on',i===n-1));$('#b1').classList.toggle('hide',n!==1);$('#b2').classList.toggle('hide',n!==2);$('#dl').classList.toggle('hide',n!==3);scrollTo(0,0)}
@@ -89,10 +96,10 @@ $('#b1').onclick=e=>{e.preventDefault();page(2);history.pushState({p:2},'')};
 $('#prev').onclick=e=>{e.preventDefault();history.back()};
 onpopstate=()=>{if($('#p2').classList.contains('on'))page(1)};
 $('#b2').onclick=async e=>{e.preventDefault();if(sending||$('#b2').disabled)return;sending=true;chk();$('#b2').firstChild.textContent='Sending… ';$('#sendErr').style.display='none';
-  const p={lab:LID,lab_title:LAB.title,timestamp:new Date().toISOString(),name:$('#name').value.trim(),email:$('#email').value.trim().toLowerCase(),phone:'',whatsapp:$('#wa').value.trim(),
+  const p={lab:LID,lab_title:LAB.title,timestamp:new Date().toISOString(),name:$('#name').value.trim(),email:$('#email').value.trim().toLowerCase(),phone:'',whatsapp:waNum(),
     q1_rating:st.q1,q2_got:st.q2.join('; '),q3_most_useful:$('#q3').value.trim(),q4_confidence:st.q4,q5_blocker:$('#q5').value.trim(),q6_help:st.q6,consent:st.consent,
     reward_title:LAB.reward_title,reward_url:abs(LAB.reward_pdf),submission_id:(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2)),user_agent:navigator.userAgent.slice(0,160)};
-  try{if(!/^https:\/\//.test(CFG.endpoint||'')){console.warn('No endpoint configured; response not saved');}else await fetch(CFG.endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)});
+  try{if(!/^(https:\/\/|http:\/\/localhost)/.test(CFG.endpoint||'')){console.warn('No endpoint configured; response not saved');}else await fetch(CFG.endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)});
     localStorage.setItem('r1_done_'+LID,JSON.stringify({name:p.name,email:p.email,t:p.timestamp}));showThanks(p.name,p.email)}
   catch(err){sending=false;$('#b2').firstChild.textContent='Submit & get the free ebook';$('#sendErr').style.display='block';chk()}};
 function showThanks(n,em){$('#tyName').textContent=n?', '+n.split(' ')[0]:'';$('#tyEmail').textContent=em||'your email';page(3)}
