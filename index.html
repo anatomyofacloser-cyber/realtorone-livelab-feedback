@@ -1,0 +1,100 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RealtorOne Live Lab · Feedback</title><meta name="theme-color" content="#000000"><meta name="robots" content="noindex">
+<style>
+@font-face{font-family:I;src:url(fonts/Inter.ttf);font-weight:100 900;font-display:swap}
+*{margin:0;box-sizing:border-box}html,body{height:100%}
+body{font-family:I,system-ui,sans-serif;background:#000;color:#fff;-webkit-font-smoothing:antialiased}
+.wrap{max-width:440px;margin:0 auto;min-height:100%;position:relative;padding-bottom:130px}
+.brand{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 0;font-size:11px;font-weight:800;letter-spacing:3px;color:#F5C242}
+.top{padding:12px 18px 6px}.ey{color:#F5C242;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase}
+.h{font-size:22px;font-weight:800;margin:4px 0 3px;line-height:1.2}.sub{color:#9aa0a6;font-size:13px;line-height:1.4}
+.bar{height:4px;background:#2a2a2c;border-radius:4px;margin:12px 0 0}.bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#F8D56B,#C98A12);transition:width .4s}
+.q{margin:10px 14px;background:#1c1c1e;border-radius:14px;padding:12px 13px;border:1px solid #2a2a2c}
+.ql{font-size:14px;font-weight:700;margin-bottom:9px;line-height:1.3}.ql span{color:#F5C242;margin-right:5px}.ql em{color:#9aa0a6;font-weight:500;font-style:normal;font-size:12px}
+.stars{display:flex;gap:6px}.stars button{font-size:32px;color:#3a3a3c;background:none;border:0;cursor:pointer;padding:0 2px;line-height:1}.stars button.f{color:#F5C242}
+.sc{display:flex;gap:6px}.sc button{flex:1;padding:10px 0;border-radius:10px;background:#2a2a2c;font:700 14px I;color:#ccc;border:0;cursor:pointer}.sc button.s{background:linear-gradient(135deg,#F8D56B,#C98A12);color:#111}
+.sl{display:flex;justify-content:space-between;font-size:10.5px;color:#888;margin-top:5px}
+.ch{display:flex;flex-wrap:wrap;gap:7px}.ch button{font:600 12.5px I;padding:8px 11px;border-radius:20px;background:#2a2a2c;color:#ccc;border:0;cursor:pointer;text-align:left}.ch button.s{background:rgba(245,194,66,.15);color:#F5C242;box-shadow:inset 0 0 0 1px #F5C242}
+input.in{width:100%;background:#242426;border:0;outline:1px solid #333;border-radius:10px;padding:11px 12px;font:15px I;color:#fff}input.in:focus{outline-color:#F5C242}
+.err{font-size:11.5px;color:#ff8a80;margin-top:5px;display:none}
+.cons{display:flex;gap:10px;align-items:center;font-size:13px;color:#bbb;margin:12px 20px;cursor:pointer}.cons i{width:20px;height:20px;border-radius:5px;background:#2a2a2c;color:transparent;font-size:13px;font-weight:900;display:grid;place-items:center;font-style:normal;flex:none}.cons.ck i{background:#F5C242;color:#111}
+.foot{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(0deg,#000 70%,rgba(0,0,0,0))}
+.btn{display:block;max-width:412px;margin:0 auto;text-align:center;padding:14px;border-radius:14px;background:linear-gradient(135deg,#F8D56B,#C98A12);color:#111;font:800 15.5px I;border:0;width:100%;cursor:pointer;text-decoration:none}
+.btn small{display:block;font-size:11px;font-weight:600;opacity:.7}.btn:disabled{opacity:.35;cursor:default}.btn.dk{background:#1c1c1e;color:#F5C242;box-shadow:inset 0 0 0 1px #F5C242;margin-top:8px}
+.pg{display:none;animation:fi .35s ease}.pg.on{display:block}@keyframes fi{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.c{text-align:center;padding:24px 22px 0}.big{font-size:52px}
+.card{margin:16px 14px;background:#1c1c1e;border-radius:16px;padding:14px;border:1px solid rgba(245,194,66,.35);display:flex;gap:14px;align-items:center}
+.card img{width:92px;border-radius:6px;flex:none;box-shadow:0 6px 18px rgba(0,0,0,.6)}
+.note{font-size:12px;color:#9aa0a6;text-align:center;margin:8px 22px;line-height:1.5}
+.hide{display:none!important}
+</style></head><body><div class="wrap">
+<div class="brand"><span>REALTORONE</span><span id="labNo">LIVE LAB</span></div>
+<form id="f" novalidate>
+<section class="pg on" id="p1">
+<div class="top"><div class="ey" id="eyebrow">Live Lab feedback</div><div class="h">How was today's Lab?</div><div class="sub" id="lead">30 seconds · get your free ebook</div><div class="bar"><i style="width:45%"></i></div></div>
+<div class="q"><div class="ql"><span>1</span>How valuable was today's Live Lab?</div><div class="stars" id="q1"></div></div>
+<div class="q"><div class="ql"><span>2</span>What did you get from it? <em>(pick all that apply)</em></div><div class="ch" id="q2"></div></div>
+<div class="q"><div class="ql"><span>3</span>Which part was most useful to you?</div><input class="in" id="q3" maxlength="200" placeholder="One line…"></div>
+</section>
+<section class="pg" id="p2">
+<div class="top"><div class="ey" id="eyebrow2"></div><div class="h">Almost done 🙌</div><div class="sub"><a href="#" id="prev" style="color:#F5C242;text-decoration:none">← Page 1</a> · Page 2 of 2 · where should we send your ebook?</div><div class="bar"><i style="width:90%"></i></div></div>
+<div class="q"><div class="ql"><span>4</span>How confident are you to use this in your work this week?</div><div class="sc" id="q4"></div><div class="sl"><span>Not yet</span><span>Fully ready</span></div></div>
+<div class="q"><div class="ql"><span>5</span>What's still stopping you from closing more deals?</div><input class="in" id="q5" maxlength="200" placeholder="One line…"></div>
+<div class="q"><div class="ql"><span>6</span>Want our experts to help you apply this?</div><div class="ch" id="q6"></div></div>
+<div class="q"><div class="ql">Your details</div>
+<input class="in" id="name" maxlength="80" placeholder="Name (optional)" autocomplete="name" style="margin-bottom:8px">
+<input class="in" id="email" type="email" maxlength="120" placeholder="Email (we send the ebook here) *" autocomplete="email" style="margin-bottom:8px"><div class="err" id="emErr">Please enter a valid email</div>
+<input class="in" id="wa" type="tel" maxlength="20" placeholder="WhatsApp number (optional), e.g. +971 50…" autocomplete="tel"></div>
+<div class="cons" id="cons" role="checkbox" aria-checked="false" tabindex="0"><i>✓</i>OK to share my feedback (first name only)</div>
+<div class="err" id="sendErr" style="text-align:center;margin:0 20px">Couldn't send. Check your connection and try again.</div>
+</section>
+</form>
+<section class="pg" id="p3">
+<div class="c"><div class="big">🎉</div><div class="h" style="font-size:25px">Thank you<span id="tyName"></span>!</div><div class="sub" style="margin-top:6px">Your feedback shapes the next Live Lab.</div></div>
+<div class="card"><img id="cover" alt="Ebook cover"><div><div class="ey">Free ebook · PDF</div><div style="font-weight:800;font-size:16px;margin-top:4px" id="rTitle"></div><div class="sub" style="margin-top:4px">✉ A copy is on its way to<br><b style="color:#F5C242" id="tyEmail"></b></div></div></div>
+<div class="note">Not in your inbox in 5 minutes? Check Promotions/Spam, or just download it below.</div>
+</section>
+<div class="foot"><button class="btn" id="b1" disabled>Next →<small>Rate and pick at least one</small></button>
+<button class="btn hide" id="b2" disabled>Submit &amp; get the free ebook<small>Answer Q4, Q6 and add your email</small></button>
+<a class="btn hide" id="dl" download>⬇ Download ebook (PDF)</a></div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const Q2=["A new script/line","A clear next step","A fresh mindset","Solution for my current deal","Not much"];
+const Q6=["Yes","Tell me more","Not now"];
+let CFG,LAB,LID,st={q1:0,q2:[],q4:0,q6:"",consent:false},sending=false;
+function el(t,txt,cls){const e=document.createElement(t);e.type="button";e.textContent=txt;if(cls)e.className=cls;return e}
+function abs(p){return new URL(p,location.href).href}
+async function init(){
+  CFG=await (await fetch('labs.json',{cache:'no-store'})).json();
+  const qs=new URLSearchParams(location.search);LID=qs.get('lab')||(location.pathname.match(/\/(\d{2,3})\/?$/)||[])[1]||CFG.latest;
+  if(!CFG.labs[LID])LID=CFG.latest;LAB=CFG.labs[LID];
+  if(LAB.q2)Q2.splice(0,Q2.length,...LAB.q2);
+  document.title='RealtorOne Live Lab #'+LAB.number+' · Feedback';
+  $('#labNo').textContent='LIVE LAB #'+LAB.number;$('#eyebrow').textContent=$('#eyebrow2').textContent='Live Lab #'+LAB.number+' · '+(LAB.short||LAB.title);
+  $('#lead').textContent='30 seconds · get "'+LAB.reward_title+'" free';
+  for(let i=1;i<=5;i++){const b=el('button','★');b.setAttribute('aria-label',i+' stars');b.onclick=()=>{st.q1=i;[...$('#q1').children].forEach((x,j)=>x.classList.toggle('f',j<i));chk()};$('#q1').append(b)}
+  Q2.forEach(t=>{const b=el('button',t);b.onclick=()=>{const none=t==='Not much';[...$('#q2').children].forEach(x=>{if(none?x!==b:x.textContent==='Not much')x.classList.remove('s')});b.classList.toggle('s');st.q2=[...$('#q2').children].filter(x=>x.classList.contains('s')).map(x=>x.textContent);chk()};$('#q2').append(b)});
+  for(let i=1;i<=5;i++){const b=el('button',i);b.onclick=()=>{st.q4=i;[...$('#q4').children].forEach(x=>x.classList.toggle('s',x===b));chk()};$('#q4').append(b)}
+  Q6.forEach(t=>{const b=el('button',t);b.onclick=()=>{st.q6=t;[...$('#q6').children].forEach(x=>x.classList.toggle('s',x===b));chk()};$('#q6').append(b)});
+  const c=$('#cons');const tg=()=>{st.consent=!st.consent;c.classList.toggle('ck',st.consent);c.setAttribute('aria-checked',st.consent)};c.onclick=tg;c.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}};
+  $('#email').oninput=chk;
+  $('#cover').src=LAB.reward_cover||'';$('#rTitle').textContent=LAB.reward_title;$('#dl').href=LAB.reward_pdf;$('#dl').setAttribute('download',LAB.reward_pdf.split('/').pop());
+  const done=localStorage.getItem('r1_done_'+LID);if(done){const d=JSON.parse(done);showThanks(d.name,d.email)}
+}
+const emOk=()=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('#email').value.trim());
+function chk(){$('#b1').disabled=!(st.q1&&st.q2.length);$('#b2').disabled=sending||!(st.q4&&st.q6&&emOk());$('#emErr').style.display=($('#email').value.trim()&&!emOk())?'block':'none'}
+function page(n){['#p1','#p2','#p3'].forEach((p,i)=>$(p).classList.toggle('on',i===n-1));$('#b1').classList.toggle('hide',n!==1);$('#b2').classList.toggle('hide',n!==2);$('#dl').classList.toggle('hide',n!==3);scrollTo(0,0)}
+$('#b1').onclick=e=>{e.preventDefault();page(2);history.pushState({p:2},'')};
+$('#prev').onclick=e=>{e.preventDefault();history.back()};
+onpopstate=()=>{if($('#p2').classList.contains('on'))page(1)};
+$('#b2').onclick=async e=>{e.preventDefault();if(sending||$('#b2').disabled)return;sending=true;chk();$('#b2').firstChild.textContent='Sending… ';$('#sendErr').style.display='none';
+  const p={lab:LID,lab_title:LAB.title,timestamp:new Date().toISOString(),name:$('#name').value.trim(),email:$('#email').value.trim().toLowerCase(),phone:'',whatsapp:$('#wa').value.trim(),
+    q1_rating:st.q1,q2_got:st.q2.join('; '),q3_most_useful:$('#q3').value.trim(),q4_confidence:st.q4,q5_blocker:$('#q5').value.trim(),q6_help:st.q6,consent:st.consent,
+    reward_title:LAB.reward_title,reward_url:abs(LAB.reward_pdf),submission_id:(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2)),user_agent:navigator.userAgent.slice(0,160)};
+  try{if(!/^https:\/\//.test(CFG.endpoint||'')){console.warn('No endpoint configured; response not saved');}else await fetch(CFG.endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)});
+    localStorage.setItem('r1_done_'+LID,JSON.stringify({name:p.name,email:p.email,t:p.timestamp}));showThanks(p.name,p.email)}
+  catch(err){sending=false;$('#b2').firstChild.textContent='Submit & get the free ebook';$('#sendErr').style.display='block';chk()}};
+function showThanks(n,em){$('#tyName').textContent=n?', '+n.split(' ')[0]:'';$('#tyEmail').textContent=em||'your email';page(3)}
+init();
+</script></body></html>

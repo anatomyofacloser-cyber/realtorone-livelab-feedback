@@ -1,0 +1,23 @@
+{
+  "endpoint": "PASTE_APPS_SCRIPT_WEB_APP_URL_HERE",
+  "latest": "05",
+  "labs": {
+    "05": {
+      "number": "05",
+      "title": "How to Master Objection Handling in Dubai Real Estate",
+      "short": "Objection Handling",
+      "subtitle": "Learn what to say when buyers push back and how to keep the deal moving.",
+      "date": "2026-10-21",
+      "reward_pdf": "pdfs/15-Objections-Ebook.pdf",
+      "reward_title": "15 Objections Every Dubai Realtor Faces",
+      "reward_cover": "assets/cover-05.jpg",
+      "q2": [
+        "A reply to price objections",
+        "Scripts for \"I'll think about it\"",
+        "How to handle off-plan/handover doubts",
+        "Confidence to push back calmly",
+        "Not much"
+      ]
+    }
+  }
+}
