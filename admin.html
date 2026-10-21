@@ -1,0 +1,82 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RealtorOne · Live Lab Admin</title><meta name="robots" content="noindex,nofollow">
+<style>
+@font-face{font-family:I;src:url(fonts/Inter.ttf);font-weight:100 900;font-display:swap}
+*{margin:0;box-sizing:border-box}body{font-family:I,system-ui,sans-serif;background:#0b0b0d;color:#eee;min-height:100vh}
+a{color:#F5C242}.gold{color:#F5C242}
+.login{max-width:360px;margin:12vh auto;background:#151517;border:1px solid rgba(245,194,66,.4);border-radius:20px;padding:28px}
+.br{font-size:11px;font-weight:800;letter-spacing:3px;color:#F5C242}h1{font-size:24px;margin:8px 0 18px}
+label{display:block;font-size:12.5px;color:#bbb;margin:12px 0 6px}
+input,select{width:100%;background:#222225;border:0;outline:1px solid #333;border-radius:10px;padding:11px 12px;font:15px I;color:#fff}input:focus,select:focus{outline-color:#F5C242}
+.btn{display:inline-block;border:0;cursor:pointer;border-radius:12px;padding:12px 16px;font:800 14px I;background:linear-gradient(135deg,#F8D56B,#C98A12);color:#111;text-decoration:none}
+.btn.w{width:100%;margin-top:18px}.btn.sm{padding:7px 11px;font-size:12px;border-radius:9px}.btn.dk{background:#1c1c1e;color:#F5C242;box-shadow:inset 0 0 0 1px #F5C242}
+.msg{font-size:12.5px;color:#ff8a80;margin-top:10px;min-height:16px}
+.top{display:flex;align-items:center;gap:14px;padding:18px 26px;border-bottom:1px solid #222;position:sticky;top:0;background:#0b0b0dee;backdrop-filter:blur(6px);z-index:5;flex-wrap:wrap}
+.top h2{font-size:18px;flex:1;min-width:200px}.top select{width:auto;min-width:220px}
+main{padding:22px 26px;max-width:1400px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.k{background:#151517;border:1px solid #2a2a2c;border-radius:16px;padding:16px}.k b{display:block;font-size:30px;color:#F5C242;margin-top:6px}.k span{font-size:12px;color:#9aa0a6;letter-spacing:.5px;text-transform:uppercase;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;margin-top:12px}
+.p{background:#151517;border:1px solid #2a2a2c;border-radius:16px;padding:16px;overflow:auto}.p h3{font-size:13px;letter-spacing:1px;color:#F5C242;text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hb{display:grid;grid-template-columns:minmax(120px,1.4fr) 3fr 40px;gap:8px;align-items:center;font-size:12.5px;margin:7px 0}.hb i{display:block;height:10px;border-radius:6px;background:linear-gradient(90deg,#F8D56B,#C98A12)}.hb .t{background:#2a2a2c;border-radius:6px}.hb em{font-style:normal;text-align:right;color:#ccc}
+table{width:100%;border-collapse:collapse;font-size:12.5px}th{text-align:left;color:#9aa0a6;font-weight:700;padding:8px;border-bottom:1px solid #2a2a2c;white-space:nowrap;position:sticky;top:0;background:#151517}td{padding:8px;border-bottom:1px solid #1f1f22;vertical-align:top}
+tr:hover td{background:#1a1a1d}.tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:#2a2a2c;white-space:nowrap}.tag.y{background:#F5C242;color:#111}.tag.t{background:rgba(245,194,66,.18);color:#F5C242}
+.q{border-left:3px solid #F5C242;background:#1c1c1e;border-radius:0 10px 10px 0;padding:9px 12px;margin:8px 0;font-size:13px;font-style:italic}.q small{display:block;font-style:normal;color:#9aa0a6;margin-top:4px}
+.tbl{max-height:520px;overflow:auto}@media(max-width:500px){.kpis{grid-template-columns:1fr 1fr}.k b{font-size:24px}main{padding:14px}.top{padding:14px}}.muted{color:#777;font-size:12.5px}.hide{display:none!important}
+</style></head><body>
+<div class="login" id="login"><div class="br">REALTORONE · LIVE LAB</div><h1>Admin sign in</h1>
+<form id="lf"><label for="u">Username</label><input id="u" autocomplete="username" required><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required>
+<button class="btn w" id="lb">Sign in</button><div class="msg" id="lm"></div></form><div class="muted" style="margin-top:14px">Private. Data is loaded from the RealtorOne Google Sheet only after sign-in.</div></div>
+<div id="app" class="hide">
+<div class="top"><h2><span class="gold">RealtorOne</span> · Live Lab Admin</h2><select id="lab"></select><button class="btn sm dk" id="rf">↻ Refresh</button><button class="btn sm dk" id="lo">Sign out</button></div>
+<main>
+<div class="kpis" id="kpis"></div>
+<div class="grid"><div class="p"><h3>Rating distribution</h3><div id="c1"></div></div><div class="p"><h3>Q2 · What they got</h3><div id="c2"></div></div><div class="p"><h3>Q6 · Wants help</h3><div id="c3"></div></div></div>
+<div class="p" style="margin-top:12px"><h3>🔥 Hot leads (Yes / Tell me more) <span class="muted" id="hlc"></span></h3><div class="tbl" id="leads"></div></div>
+<div class="grid"><div class="p"><h3>💬 Consented quotes</h3><div id="quotes"></div></div><div class="p"><h3>Labs overview</h3><div id="labs"></div></div></div>
+<div class="p" style="margin-top:12px"><h3>All responses <span style="display:flex;gap:8px"><input id="srch" placeholder="Search name, email, answer…" style="width:260px;padding:7px 10px;font-size:13px"><button class="btn sm" id="csv">⬇ CSV</button></span></h3><div class="tbl" id="all"></div></div>
+<div class="muted" style="margin:14px 0" id="gen"></div>
+</main></div>
+<script>
+const $=s=>document.querySelector(s);let EP,DATA=null;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(params){const u=EP+'?'+new URLSearchParams(params);const r=await fetch(u,{method:'GET',redirect:'follow'});return r.json()}
+async function boot(){EP=(await (await fetch('labs.json',{cache:'no-store'})).json()).endpoint;if(sessionStorage.r1tok)load()}
+$('#lf').onsubmit=async e=>{e.preventDefault();$('#lb').disabled=true;$('#lm').textContent='Signing in…';
+  try{const r=await api({action:'login',u:$('#u').value,p:$('#pw').value});$('#pw').value='';
+    if(r.ok){sessionStorage.r1tok=r.token;await load()}else $('#lm').textContent=r.error==='locked'?'Too many attempts. Try again in 15 minutes.':r.error==='not_configured'?'Admin password not set yet (run setAdminPassword in Apps Script).':'Wrong username or password'+(r.attemptsLeft!=null?' ('+r.attemptsLeft+' tries left)':'')+'.'}
+  catch(err){$('#lm').textContent='Could not reach the server.'}$('#lb').disabled=false};
+async function load(){const r=await api({action:'data',token:sessionStorage.r1tok}).catch(()=>({ok:false}));
+  if(!r.ok){sessionStorage.removeItem('r1tok');$('#app').classList.add('hide');$('#login').classList.remove('hide');if(r.error==='auth')$('#lm').textContent='Session expired, please sign in again.';return}
+  DATA=r;$('#login').classList.add('hide');$('#app').classList.remove('hide');
+  const cur=$('#lab').value;const labs=Object.keys(r.labs).sort().reverse();
+  $('#lab').innerHTML='<option value="all">All labs</option>'+labs.map(l=>`<option value="${esc(l)}">Lab ${esc(l)} · ${esc(r.labs[l].title||'')}</option>`).join('');
+  $('#lab').value=cur&&(cur==='all'||labs.includes(cur))?cur:(labs[0]||'all');render()}
+$('#lab').onchange=render;$('#srch').oninput=()=>renderAll(rows());$('#rf').onclick=load;
+$('#lo').onclick=()=>{api({action:'logout',token:sessionStorage.r1tok}).catch(()=>{});sessionStorage.removeItem('r1tok');location.reload()};
+const rows=()=>{const l=$('#lab').value;return DATA.responses.filter(x=>l==='all'||x.lab===l).sort((a,b)=>b.received.localeCompare(a.received))};
+function bars(el,pairs){const m=Math.max(1,...pairs.map(p=>p[1]));el.innerHTML=pairs.length?pairs.map(([k,v])=>`<div class="hb"><span>${esc(k)}</span><span class="t"><i style="width:${v/m*100}%"></i></span><em>${v}</em></div>`).join(''):'<div class="muted">No data yet</div>'}
+function donut(el,pairs){const tot=pairs.reduce((a,p)=>a+p[1],0);const cols=['#F5C242','#B07D22','#555'];let a=0,svg='';
+  pairs.forEach(([k,v],i)=>{if(!v)return;if(v===tot){svg+=`<circle cx="70" cy="70" r="60" stroke="${cols[i]}" stroke-width="22" fill="none"/>`;return}const f=v/tot,a2=a+f*2*Math.PI,lg=f>.5?1:0,r=60,c=70;const x1=c+r*Math.sin(a),y1=c-r*Math.cos(a),x2=c+r*Math.sin(a2-1e-6),y2=c-r*Math.cos(a2-1e-6);svg+=`<path d="M${x1} ${y1}A${r} ${r} 0 ${lg} 1 ${x2} ${y2}" stroke="${cols[i]}" stroke-width="22" fill="none"/>`;a=a2});
+  el.innerHTML=`<div style="display:flex;gap:18px;align-items:center"><svg width="140" height="140" viewBox="0 0 140 140"><circle cx="70" cy="70" r="60" stroke="#2a2a2c" stroke-width="22" fill="none"/>${svg}<text x="70" y="76" text-anchor="middle" fill="#fff" font-size="20" font-weight="800">${tot}</text></svg><div>${pairs.map(([k,v],i)=>`<div style="font-size:13px;margin:6px 0"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${cols[i]};margin-right:6px"></span>${esc(k)}: <b>${v}</b> ${tot?'('+Math.round(v/tot*100)+'%)':''}</div>`).join('')}</div></div>`}
+const waLink=n=>{const d=String(n||'').replace(/[^\d]/g,'');return d?`<a href="https://wa.me/${d}" target="_blank" rel="noopener">${esc(n)}</a>`:'<span class="muted">–</span>'};
+const mail=e=>e?`<a href="mailto:${esc(e)}">${esc(e)}</a>`:'';
+const tag=q=>`<span class="tag ${q==='Yes'?'y':q==='Tell me more'?'t':''}">${esc(q)}</span>`;
+const dt=s=>{const d=new Date(s);return isNaN(d)?esc(s):d.toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})};
+function render(){const R=rows(),n=R.length,avg=k=>n?(R.reduce((a,x)=>a+x[k],0)/n).toFixed(2):'–';const hot=R.filter(x=>x.q6==='Yes'||x.q6==='Tell me more');
+  $('#kpis').innerHTML=[['Responses',n],['Avg rating',avg('q1')+(n?' ★':'')],['Avg confidence',avg('q4')],['Ebooks sent',R.filter(x=>x.email_sent).length],['Hot leads',hot.length]].map(([a,b])=>`<div class="k"><span>${a}</span><b>${b}</b></div>`).join('');
+  bars($('#c1'),[5,4,3,2,1].map(i=>[i+' ★',R.filter(x=>x.q1===i).length]));
+  const q2={};R.forEach(x=>x.q2.split(';').map(s=>s.trim()).filter(Boolean).forEach(o=>q2[o]=(q2[o]||0)+1));bars($('#c2'),Object.entries(q2).sort((a,b)=>b[1]-a[1]));
+  donut($('#c3'),['Yes','Tell me more','Not now'].map(o=>[o,R.filter(x=>x.q6===o).length]));
+  $('#hlc').textContent=hot.length+' leads';
+  $('#leads').innerHTML=hot.length?`<table><tr><th>Received</th><th>Lab</th><th>Name</th><th>Wants</th><th>Email</th><th>WhatsApp</th><th>Rating</th><th>Conf.</th><th>Blocker</th></tr>${hot.map(x=>`<tr><td>${dt(x.received)}</td><td>${esc(x.lab)}</td><td><b>${esc(x.name||'–')}</b></td><td>${tag(x.q6)}</td><td>${mail(x.email)}</td><td>${waLink(x.whatsapp)}</td><td>${x.q1}★</td><td>${x.q4}</td><td>${esc(x.q5)}</td></tr>`).join('')}</table>`:'<div class="muted">No hot leads yet</div>';
+  const qs=R.filter(x=>x.consent&&String(x.q3||'').trim()).slice(0,8);$('#quotes').innerHTML=qs.length?qs.map(x=>`<div class="q">"${esc(x.q3)}"<small>— ${esc((x.name||'Attendee').split(' ')[0])} · Lab ${esc(x.lab)} · ${x.q1}★</small></div>`).join(''):'<div class="muted">No consented quotes yet</div>';
+  const L=Object.values(DATA.labs).sort((a,b)=>b.lab.localeCompare(a.lab));$('#labs').innerHTML=`<table><tr><th>Lab</th><th>Title</th><th>Resp.</th><th>Avg ★</th><th>Avg conf.</th></tr>${L.map(l=>`<tr><td>${esc(l.lab)}</td><td>${esc(l.title)}</td><td>${l.n}</td><td>${l.avg_rating}</td><td>${l.avg_confidence}</td></tr>`).join('')}</table>`;
+  $('#gen').textContent='Loaded '+new Date(DATA.generated).toLocaleString()+' · '+DATA.responses.length+' responses in the sheet';renderAll(R)}
+function renderAll(R){const s=$('#srch').value.trim().toLowerCase();const F=s?R.filter(x=>JSON.stringify(x).toLowerCase().includes(s)):R;window._F=F;
+  $('#all').innerHTML=F.length?`<table><tr><th>Row</th><th>Received</th><th>Lab</th><th>Name</th><th>Email</th><th>WhatsApp</th><th>Q1</th><th>Q2 got</th><th>Q3 most useful</th><th>Q4</th><th>Q5 blocker</th><th>Q6</th><th>Consent</th><th>Ebook</th></tr>${F.map(x=>`<tr><td>${x.row}</td><td>${dt(x.received)}</td><td>${esc(x.lab)}</td><td>${esc(x.name)}</td><td>${mail(x.email)}</td><td>${waLink(x.whatsapp)}</td><td>${x.q1}</td><td>${esc(x.q2)}</td><td>${esc(x.q3)}</td><td>${x.q4}</td><td>${esc(x.q5)}</td><td>${tag(x.q6)}</td><td>${x.consent?'Yes':'No'}</td><td>${x.email_sent?'✓':'–'}</td></tr>`).join('')}</table>`:'<div class="muted">No matching responses</div>'}
+$('#csv').onclick=()=>{const F=window._F||[];const cols=['row','received','lab','lab_title','name','email','whatsapp','q1','q2','q3','q4','q5','q6','consent','email_sent'];
+  const c=v=>{v=String(v??'');if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'};
+  const csv=[cols.join(',')].concat(F.map(x=>cols.map(k=>c(x[k])).join(','))).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download='livelab-responses-'+$('#lab').value+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click()};
+boot();
+</script></body></html>

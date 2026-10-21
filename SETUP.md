@@ -57,3 +57,36 @@ Attendees only ever see the form and the thank-you page. There is **no admin vie
 - Google Workspace account: **about 1,500/day**.
 - If a webinar might get more than ~80 submissions, deploy the script from a Workspace account. Everyone can still download the PDF on the thank-you page anyway.
 - Remaining quota: open the `/exec` URL (`mailQuotaLeft`).
+
+## Private admin web page (password-protected)
+**Admin URL:** https://anatomyofacloser-cyber.github.io/realtorone-livelab-feedback/admin.html
+
+The page itself holds **no data**. After you sign in, it loads the responses straight from your Google Sheet through the Apps Script, so the public repo never contains anyone's details. New labs appear automatically. Your session lasts 6 hours and only lives in that browser tab (sign out or close the tab to end it). After 5 wrong passwords, sign-in is blocked for 15 minutes.
+
+### A. Update the script (needed once for the admin page; repeat whenever I send a new Code.gs)
+1. Open your Sheet → **Extensions → Apps Script**.
+2. Select everything in `Code.gs` (Ctrl/Cmd + A), delete it, paste the new **apps-script/Code.gs**, and click **Save** 💾.
+3. Put your sales email back on the `SALES_EMAIL` line if it was reset, and click **Save**.
+4. Click **Deploy → Manage deployments**, select your **Web app** deployment, click the ✏ **Edit** pencil, set **Version: New version**, then click **Deploy**. The URL stays the same, so nothing changes on the form.
+
+### B. Set your admin username and password (once)
+1. In Apps Script, near the top of `Code.gs`, fill in the two lines:
+   ```
+   const SET_ADMIN_USER = 'guru';
+   const SET_ADMIN_PASS = 'a-strong-password-here';
+   ```
+   (the password must be at least 8 characters). Click **Save**.
+2. In the function dropdown at the top, choose **setAdminPassword** and click **▶ Run**. Accept permissions if asked. The log says "Admin login saved…".
+3. **Clear both values** back to `''` (empty) and click **Save**. Only a SHA-256 hash is kept, in Project Settings → Script properties.
+4. You don't need a new deployment for a password change. To change the password later, repeat steps 1–3.
+
+### C. Use it
+Open the admin URL and sign in. You'll see:
+- a lab picker (**All labs** or one lab)
+- cards for responses, average rating, average confidence, ebooks sent and hot leads
+- the rating distribution, Q2 "what they got" bars and the Q6 donut
+- **Hot leads**, with tap-to-email and tap-to-WhatsApp links
+- consented quotes and a labs overview
+- the full responses table, with search and **CSV export**
+
+Anyone with the admin password can see the data, so don't share it. Rows deleted from the Sheet disappear from the admin page after **Refresh**.

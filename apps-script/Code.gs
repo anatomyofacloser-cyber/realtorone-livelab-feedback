@@ -10,15 +10,70 @@ const FROM_NAME   = 'RealtorOne Live Lab';
 const REPLY_TO    = '';                             // optional, e.g. 'team@yourdomain.com'
 const SITE_URL    = 'https://anatomyofacloser-cyber.github.io/realtorone-livelab-feedback/';
 const RESPONSES   = 'Responses';
+
+// ── Admin login (one-time): type a username + password here, run setAdminPassword ▶, then clear both back to ''. ──
+const SET_ADMIN_USER = '';
+const SET_ADMIN_PASS = '';
 const SUMMARY     = 'Summary';
 const DASHBOARD   = 'Dashboard';
 const HEADERS = ['Received at','Lab','Lab title','Submitted at (client)','Name','Email','Phone','WhatsApp',
   'Q1 Value (1-5)','Q2 What they got','Q3 Most useful','Q4 Confidence (1-5)','Q5 Blocker','Q6 Wants help',
   'Consent to share','Reward','Reward URL','Email sent','Sales alert','Submission ID','User agent'];
 
-function doGet() {
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  if (p.action === 'login') return json_(login_(p.u, p.p));
+  if (p.action === 'data') {
+    if (!validToken_(p.token)) return json_({ ok: false, error: 'auth' });
+    return json_(adminData_());
+  }
+  if (p.action === 'logout') { if (p.token) CacheService.getScriptCache().remove('tok_' + p.token); return json_({ ok: true }); }
   return json_({ ok: true, service: 'realtorone-livelab-feedback', time: new Date().toISOString(),
                  mailQuotaLeft: MailApp.getRemainingDailyQuota() });
+}
+
+/* ── Admin auth ── */
+function setAdminPassword() {
+  if (!SET_ADMIN_USER || String(SET_ADMIN_PASS).length < 8) throw new Error('Type a username and a password of at least 8 characters at the top (SET_ADMIN_USER / SET_ADMIN_PASS) first.');
+  PropertiesService.getScriptProperties().setProperties({ ADMIN_USER: String(SET_ADMIN_USER).trim().toLowerCase(), ADMIN_PASS_HASH: sha256_(SET_ADMIN_PASS) });
+  Logger.log('Admin login saved for "' + SET_ADMIN_USER + '". Now clear SET_ADMIN_USER and SET_ADMIN_PASS back to \'\' and Save.');
+}
+function sha256_(t) {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(t), Utilities.Charset.UTF_8)
+    .map(b => ('0' + (b & 255).toString(16)).slice(-2)).join('');
+}
+function login_(u, pw) {
+  const cache = CacheService.getScriptCache();
+  const fails = Number(cache.get('fails') || 0);
+  if (fails >= 5) return { ok: false, error: 'locked', retryMinutes: 15 };
+  const props = PropertiesService.getScriptProperties();
+  const U = props.getProperty('ADMIN_USER'), H = props.getProperty('ADMIN_PASS_HASH');
+  if (!U || !H) return { ok: false, error: 'not_configured' };
+  Utilities.sleep(400);
+  if (String(u || '').trim().toLowerCase() !== U || sha256_(pw || '') !== H) {
+    cache.put('fails', String(fails + 1), 15 * 60);
+    return { ok: false, error: 'invalid', attemptsLeft: Math.max(0, 4 - fails) };
+  }
+  cache.remove('fails');
+  const token = Utilities.getUuid() + Utilities.getUuid().replace(/-/g, '');
+  cache.put('tok_' + token, '1', 6 * 60 * 60);   // 6-hour session
+  return { ok: true, token: token, expiresInHours: 6 };
+}
+function validToken_(t) { return !!t && /^[\w-]{40,}$/.test(t) && CacheService.getScriptCache().get('tok_' + t) === '1'; }
+
+function adminData_() {
+  const sh = sheet_(RESPONSES);
+  const last = sh.getLastRow();
+  const rows = last > 1 ? sh.getRange(2, 1, last - 1, HEADERS.length).getValues() : [];
+  const out = rows.filter(r => r[1]).map((r, i) => ({
+    row: i + 2, received: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), lab: String(r[1]).replace(/^Lab /, ''),
+    lab_title: r[2], name: r[4], email: r[5], whatsapp: String(r[7] || ''), q1: Number(r[8]) || 0, q2: String(r[9] || ''),
+    q3: r[10], q4: Number(r[11]) || 0, q5: r[12], q6: r[13], consent: r[14] === 'Yes', email_sent: String(r[17]) === 'yes'
+  }));
+  const labs = {};
+  out.forEach(x => { const l = labs[x.lab] = labs[x.lab] || { lab: x.lab, title: x.lab_title, n: 0, r: 0, c: 0 }; l.n++; l.r += x.q1; l.c += x.q4; });
+  Object.values(labs).forEach(l => { l.avg_rating = l.n ? +(l.r / l.n).toFixed(2) : 0; l.avg_confidence = l.n ? +(l.c / l.n).toFixed(2) : 0; delete l.r; delete l.c; });
+  return { ok: true, generated: new Date().toISOString(), labs: labs, responses: out };
 }
 
 function doPost(e) {
