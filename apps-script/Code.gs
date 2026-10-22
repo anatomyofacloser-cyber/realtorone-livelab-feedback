@@ -2,6 +2,7 @@
  * RealtorOne Live Lab feedback → Google Sheet + ebook email.
  * Paste into Extensions > Apps Script of your Google Sheet, set SALES_EMAIL, then
  * run setup() once, then Deploy > New deployment > Web app (Execute as: Me, Who has access: Anyone).
+ * Every submission goes to Responses (all labs; the admin page reads this) AND its own lab tab, e.g. "Lab 06 - From Cold Call to Site Visit".
  * The Sheet is the private admin: Responses (every row), Summary (all labs), Dashboard (one lab, pick in B2).
  * Nothing here is visible on the public page; doGet only returns a health check.
  */
@@ -105,6 +106,9 @@ function doPost(e) {
       d.phone || '', d.whatsapp ? "'" + d.whatsapp : '', Number(d.q1_rating) || '', d.q2_got || '', d.q3_most_useful || '',
       Number(d.q4_confidence) || '', d.q5_blocker || '', d.q6_help || '', d.consent ? 'Yes' : 'No',
       d.reward_title || '', url, sent, alert, d.submission_id || '', d.user_agent || '']);
+    // also copy the row into this lab's own tab, e.g. "Lab 06 - From Cold Call to Site Visit"
+    try { const row = sh.getRange(sh.getLastRow(), 1, 1, HEADERS.length).getValues(); const lt = labTab_(d.lab, d.lab_title);
+          lt.getRange(lt.getLastRow() + 1, 1, 1, HEADERS.length).setValues(row); } catch (err) { /* never lose the main row */ }
     return json_({ ok: true });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
@@ -251,6 +255,31 @@ function ensureHeaders_(sh) {
     sh.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold').setBackground('#F5C242');
     sh.setFrozenRows(1);
   }
+}
+/** One tab per lab. Finds an existing tab starting with "Lab 06" (so title edits never duplicate it), else creates it with headers. */
+function labTab_(id, title) {
+  const key = labKey_(id), ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheets().find(t => t.getName() === key || t.getName().indexOf(key + ' - ') === 0);
+  if (!sh) {
+    const short = String(title || '').replace(/\s+in Dubai Real Estate$/i, '').replace(/[\[\]\*\?\/\\:]/g, '').trim();
+    sh = ss.insertSheet((key + (short ? ' - ' + short : '')).slice(0, 90));
+  }
+  ensureHeaders_(sh);
+  return sh;
+}
+/** Run once (select splitExistingByLab ▶ Run): copies rows already in Responses into their lab tabs. Responses is untouched. Safe to re-run (skips rows already copied, by Submission ID + time). */
+function splitExistingByLab() {
+  const resp = sheet_(RESPONSES), last = resp.getLastRow();
+  if (last < 2) return;
+  const rows = resp.getRange(2, 1, last - 1, HEADERS.length).getValues();
+  const groups = {};
+  rows.filter(r => r[1]).forEach(r => { const id = String(r[1]).replace(/^Lab /, ''); (groups[id] = groups[id] || []).push(r); });
+  Object.keys(groups).forEach(id => {
+    const g = groups[id], tab = labTab_(id, g[0][2]);
+    const seen = new Set(tab.getLastRow() > 1 ? tab.getRange(2, 1, tab.getLastRow() - 1, HEADERS.length).getValues().map(r => String(r[19]) + '|' + new Date(r[0]).getTime()) : []);
+    const add = g.filter(r => !seen.has(String(r[19]) + '|' + new Date(r[0]).getTime()));
+    if (add.length) tab.getRange(tab.getLastRow() + 1, 1, add.length, HEADERS.length).setValues(add);
+  });
 }
 /** Lab ids are stored as text like "Lab 05" so Sheets never turns 05 into 5. */
 function labKey_(id) { return 'Lab ' + String(id == null ? '' : id).trim(); }
