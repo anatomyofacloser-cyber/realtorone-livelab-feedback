@@ -1,6 +1,6 @@
 {
   "endpoint": "https://script.google.com/macros/s/AKfycbyOp2ZdBeVOddhTlwokSVmKwL3LHlsjFtfh9fK3PVVKNWvtKhfNLuUcX0iVUntPYO2x/exec",
-  "latest": "05",
+  "latest": "06",
   "labs": {
     "05": {
       "number": "05",
@@ -16,6 +16,23 @@
         "Scripts for \"I'll think about it\"",
         "How to handle off-plan/handover doubts",
         "Confidence to push back calmly",
+        "Not much"
+      ]
+    },
+    "06": {
+      "number": "06",
+      "title": "From Cold Call to Site Visit in Dubai Real Estate",
+      "short": "Cold Call to Site Visit",
+      "subtitle": "Learn what to say in the first 10 seconds, find the buyer's need, and book the viewing on the same call.",
+      "date": "2026-10-22",
+      "reward_pdf": "pdfs/15-Cold-Call-Blockers-Ebook.pdf",
+      "reward_title": "15 Cold Call Blockers Every Dubai Realtor Hears",
+      "reward_cover": "assets/cover-06.jpg",
+      "q2": [
+        "A stronger first 10 seconds",
+        "Discovery questions that open up buyers",
+        "A line to book the site visit",
+        "Replies to cold call brush-offs",
         "Not much"
       ]
     }
