@@ -23,12 +23,12 @@ table{width:100%;border-collapse:collapse;font-size:12.5px}th{text-align:left;co
 tr:hover td{background:#1a1a1d}.tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:#2a2a2c;white-space:nowrap}.tag.y{background:#F5C242;color:#111}.tag.t{background:rgba(245,194,66,.18);color:#F5C242}
 .q{border-left:3px solid #F5C242;background:#1c1c1e;border-radius:0 10px 10px 0;padding:9px 12px;margin:8px 0;font-size:13px;font-style:italic}.q small{display:block;font-style:normal;color:#9aa0a6;margin-top:4px}
 .tbl{max-height:520px;overflow:auto}@media(max-width:500px){.kpis{grid-template-columns:1fr 1fr}.k b{font-size:24px}main{padding:14px}.top{padding:14px}}.muted{color:#777;font-size:12.5px}.hide{display:none!important}
-</style></head><body>
+#tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}#tabs .tb{background:#1a1a1d;color:#ccc;border:1px solid #333;border-radius:999px;padding:7px 14px;cursor:pointer;font-size:13px}#tabs .tb.on{background:#F5C242;color:#111;border-color:#F5C242;font-weight:bold}#tabs small{opacity:.7}</style></head><body>
 <div class="login" id="login"><div class="br">REALTORONE · LIVE LAB</div><h1>Admin sign in</h1>
 <form id="lf"><label for="u">Username</label><input id="u" autocomplete="username" required><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required>
 <button class="btn w" id="lb">Sign in</button><div class="msg" id="lm"></div></form><div class="muted" style="margin-top:14px">Private. Data is loaded from the RealtorOne Google Sheet only after sign-in.</div></div>
 <div id="app" class="hide">
-<div class="top"><h2><span class="gold">RealtorOne</span> · Live Lab Admin</h2><select id="lab"></select><button class="btn sm dk" id="rf">↻ Refresh</button><button class="btn sm dk" id="lo">Sign out</button></div>
+<div class="top"><h2><span class="gold">RealtorOne</span> · Live Lab Admin</h2><select id="lab"></select><button class="btn sm dk" id="rf">↻ Refresh</button><button class="btn sm dk" id="lo">Sign out</button></div><div id="tabs"></div>
 <main>
 <div class="kpis" id="kpis"></div>
 <div class="grid"><div class="p"><h3>Rating distribution</h3><div id="c1"></div></div><div class="p"><h3>Q2 · What they got</h3><div id="c2"></div></div><div class="p"><h3>Q6 · Wants help</h3><div id="c3"></div></div></div>
@@ -38,10 +38,10 @@ tr:hover td{background:#1a1a1d}.tag{font-size:11px;font-weight:700;padding:2px 8
 <div class="muted" style="margin:14px 0" id="gen"></div>
 </main></div>
 <script>
-const $=s=>document.querySelector(s);let EP,DATA=null;
+const $=s=>document.querySelector(s);let EP,DATA=null,LJ={labs:{}};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(params){const u=EP+'?'+new URLSearchParams(params);const r=await fetch(u,{method:'GET',redirect:'follow'});return r.json()}
-async function boot(){EP=(await (await fetch('labs.json',{cache:'no-store'})).json()).endpoint;if(sessionStorage.r1tok)load()}
+async function boot(){LJ=await (await fetch('labs.json',{cache:'no-store'})).json();EP=LJ.endpoint;if(sessionStorage.r1tok)load()}
 $('#lf').onsubmit=async e=>{e.preventDefault();$('#lb').disabled=true;$('#lm').textContent='Signing in…';
   try{const r=await api({action:'login',u:$('#u').value,p:$('#pw').value});$('#pw').value='';
     if(r.ok){sessionStorage.r1tok=r.token;await load()}else $('#lm').textContent=r.error==='locked'?'Too many attempts. Try again in 15 minutes.':r.error==='not_configured'?'Admin password not set yet (run setAdminPassword in Apps Script).':'Wrong username or password'+(r.attemptsLeft!=null?' ('+r.attemptsLeft+' tries left)':'')+'.'}
@@ -49,10 +49,12 @@ $('#lf').onsubmit=async e=>{e.preventDefault();$('#lb').disabled=true;$('#lm').t
 async function load(){const r=await api({action:'data',token:sessionStorage.r1tok}).catch(()=>({ok:false}));
   if(!r.ok){sessionStorage.removeItem('r1tok');$('#app').classList.add('hide');$('#login').classList.remove('hide');if(r.error==='auth')$('#lm').textContent='Session expired, please sign in again.';return}
   DATA=r;$('#login').classList.add('hide');$('#app').classList.remove('hide');
-  const cur=$('#lab').value;const labs=Object.keys(r.labs).sort().reverse();
+  const cur=$('#lab').value;Object.entries(LJ.labs||{}).forEach(([k,v])=>{if(!r.labs[k])r.labs[k]={lab:k,title:v.title,n:0,avg_rating:0,avg_confidence:0};else if(!r.labs[k].title)r.labs[k].title=v.title});const labs=Object.keys(r.labs).sort().reverse();
   $('#lab').innerHTML='<option value="all">All labs</option>'+labs.map(l=>`<option value="${esc(l)}">Lab ${esc(l)} · ${esc(r.labs[l].title||'')}</option>`).join('');
+  $('#tabs').innerHTML=['all'].concat(labs).map(l=>`<button class="tb" data-l="${esc(l)}">${l==='all'?'All labs':'Lab '+esc(l)+' · '+esc((LJ.labs[l]&&LJ.labs[l].short)||r.labs[l].title||'')} <small>(${l==='all'?r.responses.length:r.labs[l].n})</small></button>`).join('');
+  document.querySelectorAll('#tabs .tb').forEach(b=>b.onclick=()=>{$('#lab').value=b.dataset.l;render()});
   $('#lab').value=cur&&(cur==='all'||labs.includes(cur))?cur:(labs[0]||'all');render()}
-$('#lab').onchange=render;$('#srch').oninput=()=>renderAll(rows());$('#rf').onclick=load;
+const _render=render;render=function(){document.querySelectorAll('#tabs .tb').forEach(b=>b.classList.toggle('on',b.dataset.l===$('#lab').value));return _render.apply(this,arguments)};$('#lab').onchange=render;$('#srch').oninput=()=>renderAll(rows());$('#rf').onclick=load;
 $('#lo').onclick=()=>{api({action:'logout',token:sessionStorage.r1tok}).catch(()=>{});sessionStorage.removeItem('r1tok');location.reload()};
 const rows=()=>{const l=$('#lab').value;return DATA.responses.filter(x=>l==='all'||x.lab===l).sort((a,b)=>b.received.localeCompare(a.received))};
 function bars(el,pairs){const m=Math.max(1,...pairs.map(p=>p[1]));el.innerHTML=pairs.length?pairs.map(([k,v])=>`<div class="hb"><span>${esc(k)}</span><span class="t"><i style="width:${v/m*100}%"></i></span><em>${v}</em></div>`).join(''):'<div class="muted">No data yet</div>'}
